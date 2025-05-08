@@ -1,5 +1,5 @@
 
-# CoffeeRestApiApp ☕
+# THE AP HOUSE ☕
 
 A RESTful API for managing a coffee shop system, built with Node.js and Express.
 
