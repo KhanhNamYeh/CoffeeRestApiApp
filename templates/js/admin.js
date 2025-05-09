@@ -20,7 +20,7 @@ async function loadMenuItems() {
     <td class="px-4 py-2"><img src="/../${item.image}" class="w-16 h-10 object-cover rounded" /></td>
     <td class="px-4 py-2">${item.name}</td>
     <td class="px-4 py-2 description-cell">${item.description}</td>
-    <td class="px-4 py-2">$${item.price.toFixed(2)}</td>
+    <td class="px-4 py-2">$${parseFloat(item.price).toFixed(2)}</td>
     <td class="px-4 py-2">${item.category || '-'}</td>
     <td class="px-4 py-2 flex flex-wrap gap-2">
     <button class="bg-yellow-400 text-white px-4 py-1 rounded hover:bg-yellow-500 mr-2" onclick='openEditForm(${JSON.stringify(item)})'>Edit</button>
