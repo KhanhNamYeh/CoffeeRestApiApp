@@ -20,7 +20,7 @@ async function fetchMenu() {
                 <div class="menu-card-body d-flex flex-column">
                 <h5 class="card-title font-weight-bold" style="font-size:1.3rem;font-family:'Noto Serif'; color: #3d2700;">${item.name}</h5>
                 <p class="card-text font-italic" style="flex-grow: 1;">${item.description}</p>
-                <div class="price mb-2">$${item.price.toFixed(2)}</div>
+                <div class="price mb-2">$${parseFloat(item.price).toFixed(2)}</div>
                 <button class="btn btn-primary w-100 mt-auto" style="background-color: #3d2700;" onclick="orderItem('${item.id}')">
                     Order
                 </button>

@@ -27,6 +27,8 @@ SET time_zone = "+00:00";
 -- Table structure for table `booking`
 --
 
+Create database `the_ap_house`
+
 CREATE TABLE `booking` (
   `id_booking` int(11) NOT NULL,
   `name_` varchar(50) NOT NULL,
