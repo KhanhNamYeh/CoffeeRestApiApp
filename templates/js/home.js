@@ -84,7 +84,7 @@ function updateNavbar() {
 
         if (payload.role === "admin") {
             actionItem.innerHTML = '<i class="bi bi-gear me-2"></i>Setting';
-            actionItem.href = "admin.html";
+            actionItem.href = "/manage";
 
             const roleLabel = document.getElementById("user-role");
             if (roleLabel) {

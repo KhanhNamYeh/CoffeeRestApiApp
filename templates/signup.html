@@ -32,6 +32,21 @@
 
                 <div class="input-group mb-3">
                     <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" id="name" class="form-control" placeholder="NAME">
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="text" id="email" class="form-control" placeholder="EMAIL">
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                    <input type="text" id="phone" class="form-control" placeholder="PHONE">
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
                     <input type="text" id="username" class="form-control" placeholder="USERNAME">
                 </div>
 
@@ -63,6 +78,9 @@
             const API_URL = "http://localhost:3000";
 
             async function signup() {
+                const email = document.getElementById("email").value.trim();
+                const phone = document.getElementById("phone").value.trim();
+                const name = document.getElementById("name").value.trim();
                 const username = document.getElementById("username").value.trim();
                 const password = document.getElementById("password").value.trim();
                 const confirmPassword = document.getElementById("confirm-password").value.trim();
@@ -72,7 +90,7 @@
                 error.classList.add("d-none");
                 success.classList.add("d-none");
 
-                if (!username || !password || !confirmPassword) {
+                if (!username || !password || !confirmPassword || !email || !phone || !name) {
                     error.textContent = "Please fill in all fields!";
                     error.classList.remove("d-none");
                     return;
@@ -84,11 +102,17 @@
                     return;
                 }
 
+                if (email.length < 5 || !email.includes("@")) {
+                    error.textContent = "Invalid email address!";
+                    error.classList.remove("d-none");
+                    return;
+                }
+
                 try {
                     const response = await fetch(`${API_URL}/signup`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ username, password, role: "customer" })
+                        body: JSON.stringify({ username, password, name, email, phone, role: "customer" })
                     });
 
                     if (response.ok) {

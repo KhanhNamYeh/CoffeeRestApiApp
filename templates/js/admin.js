@@ -17,7 +17,7 @@ async function loadMenuItems() {
             const row = document.createElement("tr");
             row.innerHTML = `
     <td class="px-4 py-2">${item.id}</td>
-    <td class="px-4 py-2"><img src="${item.image}" class="w-16 h-10 object-cover rounded" /></td>
+    <td class="px-4 py-2"><img src="/../${item.image}" class="w-16 h-10 object-cover rounded" /></td>
     <td class="px-4 py-2">${item.name}</td>
     <td class="px-4 py-2 description-cell">${item.description}</td>
     <td class="px-4 py-2">$${item.price.toFixed(2)}</td>

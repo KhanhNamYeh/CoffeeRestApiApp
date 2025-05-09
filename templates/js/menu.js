@@ -12,23 +12,27 @@ async function fetchMenu() {
         menu.forEach(item => {
             const col = document.createElement("div");
             col.className = "col-lg-4 col-md-6 mb-4";
+        
+            // Xác định nội dung HTML tùy theo tình trạng `available`
             col.innerHTML = `
             <div class="menu-card h-100 shadow-lg">
                 <img src="${item.image}" class="card-img-top" alt="${item.name}" style="height: 220px; object-fit: cover;">
                 <div class="menu-card-body d-flex flex-column">
                 <h5 class="card-title font-weight-bold" style="font-size:1.3rem;font-family:'Noto Serif'; color: #3d2700;">${item.name}</h5>
                 <p class="card-text font-italic" style="flex-grow: 1;">${item.description}</p>
-                <div class="price mb-2">$${parseFloat(item.price).toFixed(2)}</div>
+                <div class="price mb-2">$${item.price.toFixed(2)}</div>
                 <button class="btn btn-primary w-100 mt-auto" style="background-color: #3d2700;" onclick="orderItem('${item.id}')">
                     Order
                 </button>
                 </div>
-            </div>`
-
+            `;
+        
+            // Thêm vào danh sách tương ứng theo category
             if (item.category === "coffee") coffeeList.appendChild(col);
             else if (item.category === "tea") teaList.appendChild(col);
             else if (item.category === "matcha") matchaList.appendChild(col);
         });
+        
     } catch (err) {
         console.error("Error:", err);
     }
@@ -67,7 +71,7 @@ function updateNavbar() {
 
         if (payload.role === "admin") {
             actionItem.innerHTML = '<i class="bi bi-gear me-2"></i>Setting';
-            actionItem.href = "admin.html";
+            actionItem.href = "/manage";
 
             const roleLabel = document.getElementById("user-role");
             if (roleLabel) {
@@ -87,6 +91,11 @@ function logout() {
     localStorage.removeItem("token");
     window.location.reload();
 }
+
+function alertUnavailable() {
+    alert("This item is currently unavailable.");
+}
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     updateNavbar();
