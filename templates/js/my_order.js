@@ -122,7 +122,7 @@ function loadOrders() {
                     <img src="${product.image}" alt="${product.name}">
                     <div>
                         <h5 class="font-weight-bold">${product.name} (x${order.quantity})</h5>
-                        <p>Price: $${product.price.toFixed(2)}</p>
+                        <p>Price: $${parseFloat(item.price).toFixed(2)}</p>
                         <p>Total: $${itemTotal.toFixed(2)}</p>
                         <p>Size: ${order.size}, Sugar: ${order.sugar}, Ice: ${order.ice}</p>
                         <p>NOTE: ${order.note}</p>

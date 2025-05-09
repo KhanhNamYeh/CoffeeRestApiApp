@@ -80,7 +80,7 @@
 /* RESERVE */
 #reservation {
     position: relative;
-    background: url('img/bg.jpg') no-repeat center center/cover;
+    background: url('../img/bg.jpg') no-repeat center center/cover;
     padding: 50px;
 }
 
