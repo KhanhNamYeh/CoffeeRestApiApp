@@ -1,10 +1,14 @@
 const express = require("express");
 const router = express.Router();
-let users = require("../user.js");
+const pool = require("../db");
 
-/* GET - Get all users */
-router.get("/", (req, res) => {
-    res.json(users);
+router.get("/", async (req, res) => {
+    try {
+        const [users] = await pool.query("SELECT id, username, role FROM users");
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: "Database error" });
+    }
 });
 
 module.exports = router;

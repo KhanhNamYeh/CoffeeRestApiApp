@@ -1,50 +1,47 @@
 const express = require("express");
 const router = express.Router();
+const pool = require("../db");
 const jwt = require("jsonwebtoken");
-const fs = require("fs");
 const { SECRET_KEY } = require("../middleware/auth");
-let users = require("../user.js");
 
 /* POST - Login */
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
-    const user = users.find(u => u.username === username && u.password === password);
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    try {
+        const [rows] = await pool.query("SELECT * FROM users WHERE username = ? AND password = ?", [username, password]);
 
-    const token = jwt.sign({ username: user.username, role: user.role }, SECRET_KEY, { expiresIn: "1h" });
-    res.json({ token });
-});
+        if (rows.length === 0) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
 
-router.post("/login-admin", (req, res) => {
-    const { username, password } = req.body;
-
-    if (username === "admin1" && password === "123456") {
-        const user = { username };
-        const token = jwt.sign(user, SECRET_KEY, { expiresIn: "1h" });
+        const user = rows[0];
+        const token = jwt.sign({ username: user.username, role: user.role, id: user.id }, SECRET_KEY, { expiresIn: "1h" });
         res.json({ token });
-    } else {
-        res.status(401).json({ message: "Invalid credentials" });
+    } catch (err) {
+        res.status(500).json({ message: "Login error" });
     }
 });
+
 
 /* POST - Signup */
-router.post("/signup", (req, res) => {
+router.post("/signup", async (req, res) => {
     const { username, password, role } = req.body;
 
-    const userExists = users.find(u => u.username === username);
-    if (userExists) {
-        return res.status(400).json({ message: "User already exists!" });
+    try {
+        const [exists] = await pool.query("SELECT * FROM users WHERE username = ?", [username]);
+        if (exists.length > 0) {
+            return res.status(400).json({ message: "User already exists!" });
+        }
+
+        await pool.query("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+            [username, password, role || "customer"]);
+
+        res.status(201).json({ message: "User registered successfully!" });
+    } catch (err) {
+        res.status(500).json({ message: "Database error" });
     }
-
-    const newUser = { username, password, role: role || "user" };
-    users.push(newUser);
-
-    // Rewrite to user.js 
-    const jsCode = `const users = ${JSON.stringify(users, null, 2)};\n\nmodule.exports = users;\n`;
-    fs.writeFileSync("./user.js", jsCode);
-
-    res.status(201).json({ message: "User registered successfully!" });
 });
+
 
 module.exports = router;
