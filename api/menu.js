@@ -11,10 +11,10 @@ router.get("/", async (req, res) => {
             SELECT 
                 id_menu AS id,
                 name_menu AS name,
-                description_ AS description,
+                description AS description,
                 price,
                 category,
-                image_ AS image
+                image AS image
             FROM menu
         `);
         res.json(rows);
@@ -24,8 +24,9 @@ router.get("/", async (req, res) => {
 });
 
 
+
 // // Lấy toàn bộ menu từ database
-// router.get("/", async (req, res) => {
+// router.get("/", async (req, res) => 
 //     try {
 //         const [rows] = await pool.query("SELECT * FROM menu");
 //         res.json(rows);
