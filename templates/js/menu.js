@@ -11,7 +11,7 @@ async function fetchMenu() {
 
         menu.forEach(item => {
             const col = document.createElement("div");
-            col.className = "col-lg-4 col-md-6 mb-4";
+            col.className = `col-lg-4 col-md-6 mb-4 ${item.available ? "" : "opacity-50"}`;
         
             // Xác định nội dung HTML tùy theo tình trạng `available`
             col.innerHTML = `
@@ -21,7 +21,7 @@ async function fetchMenu() {
                 <h5 class="card-title font-weight-bold" style="font-size:1.3rem;font-family:'Noto Serif'; color: #3d2700;">${item.name}</h5>
                 <p class="card-text font-italic" style="flex-grow: 1;">${item.description}</p>
                 <div class="price mb-2">$${parseFloat(item.price).toFixed(2)}</div>
-                <button class="btn btn-primary w-100 mt-auto" style="background-color: #3d2700;" onclick="orderItem('${item.id}')">
+                <button class="btn btn-primary w-100 mt-auto" style="background-color: #3d2700;" ${item.available ? "" : "disabled"} onclick="orderItem('${item.id}')">
                     Order
                 </button>
                 </div>

@@ -15,6 +15,9 @@ async function loadMenuItems() {
         tbody.innerHTML = "";
         data.forEach(item => {
             const row = document.createElement("tr");
+            if (!item.available || item.available === 0 || item.available === false) {
+                row.classList.add("bg-gray-200", "text-gray-500", "opacity-50");
+            }
             row.innerHTML = `
     <td class="px-4 py-2">${item.id}</td>
     <td class="px-4 py-2"><img src="/../${item.image}" class="w-16 h-10 object-cover rounded" /></td>
@@ -36,7 +39,7 @@ async function loadMenuItems() {
 
 function logoutAndRedirect() {
     localStorage.removeItem("token");
-    window.location.href = "home.html";
+    window.location.href = "/home.html";
 }
 
 function openAddForm() {
@@ -49,6 +52,7 @@ function openAddForm() {
     document.getElementById("price").value = "";
     document.getElementById("image").value = "";
     document.getElementById("category").value = "coffee";
+    document.getElementById("available").value = "1";
     document.getElementById("menuModal").classList.remove("hidden");
 }
 
@@ -62,6 +66,7 @@ function openEditForm(item) {
     document.getElementById("price").value = item.price;
     document.getElementById("image").value = item.image || "img/slogan.png";
     document.getElementById("category").value = item.category || "other";
+    document.getElementById("available").value = item?.available ?? 1;
     document.getElementById("menuModal").classList.remove("hidden");
 }
 
@@ -82,13 +87,16 @@ window.onload = function () {
         }
 
         const category = document.getElementById("category").value.trim();
+        const available = document.getElementById("available").value === "1" ? 1 : 0;
+
+
         const token = localStorage.getItem("token");
 
         if (!name || !description || isNaN(price)) {
             return alert("Please fill all fields correctly.");
         }
 
-        const payload = { name, description, price, image, category };
+        const payload = { name, description, price, image, category, available };
 
         const url = isEditMode ? `http://localhost:3000/menu/${currentEditId}` : "http://localhost:3000/menu";
 
@@ -104,8 +112,10 @@ window.onload = function () {
         });
 
         if (res.ok) {
+            closeModal();
             loadMenuItems();
-            showSection('menu')
+            showSection('menu');
+            alert(`${isEditMode ? "✅ Item updated successfully!" : "✅ New item added successfully!"}`);
         } else {
             alert(`${isEditMode ? "Update" : "Add"} failed.`);
         }

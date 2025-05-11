@@ -1,114 +1,92 @@
 const express = require("express");
 const router = express.Router();
 const { authenticateToken } = require("../middleware/auth");
-const pool = require("../db"); // ✅ import kết nối DB
+const pool = require("../db");
 
 
-/* GET - Get all menu items */
+// GET - Get all available menu items
 router.get("/", async (req, res) => {
     try {
         const [rows] = await pool.query(`
-            SELECT 
-                id_menu AS id,
-                name_menu AS name,
-                description AS description,
-                price,
-                category,
-                image AS image
-            FROM menu
+           SELECT id_menu AS id, name_menu AS name, description, price, category, image, available FROM menu
         `);
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ message: "Database error" });
+        res.status(500).json({ message: "Database error", error: err.message });
     }
 });
 
 
 
-// // Lấy toàn bộ menu từ database
-// router.get("/", async (req, res) => 
-//     try {
-//         const [rows] = await pool.query("SELECT * FROM menu");
-//         res.json(rows);
-//     } catch (err) {
-//         res.status(500).json({ message: "Database error" });
-//     }
-// });
+/* PUT - Update a menu item (admin only) */
+router.put("/:id", authenticateToken, async (req, res) => {
+    if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "You do not have permission to update menu!" });
+    }
 
-// /* PUT - Update a menu item (admin only) */
-// router.put("/:id", authenticateToken, (req, res) => {
-//     if (req.user.role !== "admin") {
-//         return res.status(403).json({ message: "You do not have permission to update menu!" });
-//     }
+    const { name, description, price, image, category, available } = req.body;
 
-//     const { name, description, price, image, category } = req.body;
+    try {
+        const [result] = await pool.query(
+            `UPDATE menu SET name_menu = ?, description = ?, price = ?, category = ?, image = ?, available = ?
+            WHERE id_menu = ?`,
+            [name, description, price, category, image, available, req.params.id]
+        );
 
-//     if (!name || !description || isNaN(price) || price <= 0) {
-//         return res.status(400).json({ message: "Invalid data!" });
-//     }
+        if (result.affectedRows === 0)
+            return res.status(404).json({ message: "Item not found!" });
 
-//     const index = menu.findIndex((item) => item.id === req.params.id);
-//     if (index === -1) return res.status(404).json({ message: "Item not found!" });
+        res.json({ message: "Updated successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Update error", error: err.message });
+    }
+});
 
-//     menu[index] = { ...menu[index], name, description, price, image, category };
+/* POST - Add new menu item (admin only) */
+router.post("/", authenticateToken, async (req, res) => {
+    if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "You do not have permission to add menu!" });
+    }
 
-//     // Rewrite to menu.js 
-//     const menuCode = `const menu = ${JSON.stringify(menu, null, 2)};\n\nmodule.exports = menu;\n`;
-//     fs.writeFileSync("./menu.js", menuCode);
+    const { name, description, price, image, category, available } = req.body;
 
-//     res.json({ message: "Menu item updated successfully!", item: menu[index] });
-// });
+    if (!name || !description || isNaN(price) || price <= 0 || !category) {
+        return res.status(400).json({ message: "Invalid data!" });
+    }
 
-// /* POST - Add new menu item (admin only) */
-// router.post("/", authenticateToken, (req, res) => {
-//     if (req.user.role !== "admin") {
-//         return res.status(403).json({ message: "You do not have permission to add menu!" });
-//     }
+    try {
+        await pool.query(
+            `INSERT INTO menu (name_menu, description, price, category, image, available)
+             VALUES (?, ?, ?, ?, ?, 1)`,
+            [name, description, price, category, image, available]
+        );
 
-//     const { name, description, price, image, category } = req.body;
+        res.status(201).json({ message: "Item added successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Insert error", error: err.message });
+    }
+});
 
-//     if (!name || !description || isNaN(price) || price <= 0 || !category) {
-//         return res.status(400).json({ message: "Invalid data!" });
-//     }
+/* DELETE - Delete menu item (admin only) */
+router.delete("/:id", authenticateToken, async (req, res) => {
+    if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "You do not have permission to delete!" });
+    }
 
-//     // Find prefix by category
-//     const prefixMap = { coffee: "c", tea: "t", matcha: "m" };
-//     const prefix = prefixMap[category.toLowerCase()];
-//     if (!prefix) return res.status(400).json({ message: "Invalid category!" });
+    try {
+        const [result] = await pool.query(
+            `DELETE FROM menu WHERE id_menu = ?`,
+            [req.params.id]
+        );
 
-//     // Find next number ID
-//     const existingIds = menu
-//         .filter(item => item.id && item.id.startsWith(prefix))
-//         .map(item => parseInt(item.id.substring(1)))
-//         .filter(num => !isNaN(num));
-//     const nextIdNum = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
-//     const id = `${prefix}${nextIdNum}`;
 
-//     const newItem = { id, name, description, price, image, category };
-//     menu.push(newItem);
+        if (result.affectedRows === 0)
+            return res.status(404).json({ message: "Item not found!" });
 
-//     const menuCode = `const menu = ${JSON.stringify(menu, null, 2)};\n\nmodule.exports = menu;\n`;
-//     fs.writeFileSync("./menu.js", menuCode);
-
-//     res.status(201).json({ message: "Item added!", item: newItem });
-// });
-
-// /* DELETE - Delete menu item (admin only) */
-// router.delete("/:id", authenticateToken, (req, res) => {
-//     if (req.user.role !== "admin") {
-//         return res.status(403).json({ message: "You do not have permission to delete!" });
-//     }
-
-//     const index = menu.findIndex((item) => item.id === req.params.id);
-//     if (index === -1) return res.status(404).json({ message: "Item not found!" });
-
-//     menu.splice(index, 1);
-
-//     // Rewrite to menu.js 
-//     const menuCode = `const menu = ${JSON.stringify(menu, null, 2)};\n\nmodule.exports = menu;\n`;
-//     fs.writeFileSync("./menu.js", menuCode);
-
-//     res.json({ message: "Menu item deleted successfully!" });
-// });
+        res.json({ message: "Deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Delete error", error: err.message });
+    }
+});
 
 module.exports = router;
