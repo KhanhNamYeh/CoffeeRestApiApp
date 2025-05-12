@@ -27,7 +27,7 @@ async function loadMenuItems() {
             class="toggle-switch ${item.available === 'true' ? 'active' : ''}"
             data-id="${item.id}"
             data-available="${item.available}"
-            onclick="handleToggleClick(this)"
+            onclick="editAvailable(this)"
             aria-pressed="${item.available === 'true' ? 'true' : 'false'}"
             title="Nhấn để thay đổi trạng thái">
             <span class="sr-only">${item.available === 'true' ? 'Đang bật' : 'Đang tắt'}</span>
@@ -130,7 +130,7 @@ window.onload = function () {
     });
 };
 
-async function handleToggleClick(buttonElement) {
+async function editAvailable(buttonElement) {
     const id = buttonElement.dataset.id;
     let currentAvailable = buttonElement.dataset.available;
 
@@ -165,28 +165,6 @@ async function handleToggleClick(buttonElement) {
         alert("An error occurred. Please try again.");
     }
 }
-
-
-async function editAvailable(id, currentAvailable) {
-    const token = localStorage.getItem("token");
-    const newAvailable = currentAvailable === "true" ? "false" : "true";
-
-    const res = await fetch(`http://localhost:3000/menu/available/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ available: newAvailable })
-    });
-
-    if (res.ok) {
-        loadMenuItems();
-    } else {
-        alert("Failed to update availability.");
-    }
-}
-
 
 async function deleteMenuItem(id) {
     const token = localStorage.getItem("token");
