@@ -27,7 +27,6 @@ async function fetchMenu() {
                 </div>
             `;
         
-            // Thêm vào danh sách tương ứng theo category
             if (item.category === "coffee") coffeeList.appendChild(col);
             else if (item.category === "tea") teaList.appendChild(col);
             else if (item.category === "matcha") matchaList.appendChild(col);
