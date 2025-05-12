@@ -108,4 +108,3 @@
 .toggle-switch.active::after {
   transform: translateX(26px);
 }
-
