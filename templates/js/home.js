@@ -121,10 +121,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener('DOMContentLoaded', function() {
     fetch('navbar.html')
-        .then(response => response.text())
+    .then(response => response.text())
         .then(data => {
         document.getElementById('navbar-container').innerHTML = data;
         // Run your navbar initialization scripts
         updateNavbar();
-        });
     });
+});
