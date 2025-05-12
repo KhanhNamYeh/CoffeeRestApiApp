@@ -42,6 +42,29 @@ router.put("/:id", authenticateToken, async (req, res) => {
     }
 });
 
+/* PUT - Update availability of a menu item (admin and staff) */
+router.put("/available/:id", authenticateToken, async (req, res) => {
+    if (req.user.role !== "admin" && req.user.role !== "staff") {
+        return res.status(403).json({ message: "You do not have permission to update availability!" });
+    }
+
+    const { available } = req.body;
+
+    try {
+        const [result] = await pool.query(
+            `UPDATE menu SET available = ? WHERE id_menu = ?`,
+            [available, req.params.id]
+        );
+
+        if (result.affectedRows === 0)
+            return res.status(404).json({ message: "Item not found!" });
+
+        res.json({ message: "Availability updated successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Update error", error: err.message });
+    }
+});
+
 /* POST - Add new menu item (admin only) */
 router.post("/", authenticateToken, async (req, res) => {
     if (req.user.role !== "admin") {

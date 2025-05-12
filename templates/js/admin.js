@@ -15,9 +15,6 @@ async function loadMenuItems() {
         tbody.innerHTML = "";
         data.forEach(item => {
             const row = document.createElement("tr");
-            if (!item.available || item.available === 0 || item.available === false) {
-                row.classList.add("bg-gray-200", "text-gray-500", "opacity-50");
-            }
             row.innerHTML = `
     <td class="px-4 py-2">${item.id}</td>
     <td class="px-4 py-2"><img src="/../${item.image}" class="w-16 h-10 object-cover rounded" /></td>
@@ -25,9 +22,20 @@ async function loadMenuItems() {
     <td class="px-4 py-2 description-cell">${item.description}</td>
     <td class="px-4 py-2">$${parseFloat(item.price).toFixed(2)}</td>
     <td class="px-4 py-2">${item.category || '-'}</td>
+    <td class="px-4 py-2">
+        <button
+            class="toggle-switch ${item.available === 'true' ? 'active' : ''}"
+            data-id="${item.id}"
+            data-available="${item.available}"
+            onclick="handleToggleClick(this)"
+            aria-pressed="${item.available === 'true' ? 'true' : 'false'}"
+            title="Nhấn để thay đổi trạng thái">
+            <span class="sr-only">${item.available === 'true' ? 'Đang bật' : 'Đang tắt'}</span>
+        </button>
+    </td>
     <td class="px-4 py-2 flex flex-wrap gap-2">
-    <button class="bg-yellow-400 text-white px-4 py-1 rounded hover:bg-yellow-500 mr-2" onclick='openEditForm(${JSON.stringify(item)})'>Edit</button>
-    <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="deleteMenuItem('${item.id}')">Delete</button>
+        <button class="bg-yellow-400 text-white px-4 py-1 rounded hover:bg-yellow-500 mr-2" onclick='openEditForm(${JSON.stringify(item)})'>Edit</button>
+        <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="deleteMenuItem('${item.id}')">Delete</button>
     </td>
 `;
             tbody.appendChild(row);
@@ -122,6 +130,64 @@ window.onload = function () {
     });
 };
 
+async function handleToggleClick(buttonElement) {
+    const id = buttonElement.dataset.id;
+    let currentAvailable = buttonElement.dataset.available;
+
+    const token = localStorage.getItem("token");
+    const newAvailable = currentAvailable === "true" ? "false" : "true";
+
+    try {
+        const res = await fetch(`http://localhost:3000/menu/available/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ available: newAvailable })
+        });
+
+        if (res.ok) {
+            buttonElement.classList.toggle('active', newAvailable === 'true');
+            buttonElement.dataset.available = newAvailable;
+            buttonElement.setAttribute('aria-pressed', newAvailable);
+
+            const srTextElement = buttonElement.querySelector('.sr-only');
+            if (srTextElement) {
+                srTextElement.textContent = newAvailable === 'true' ? 'Enabled' : 'Disabled';
+            }
+        } else {
+            const errorData = await res.json().catch(() => ({ message: "Update failed. Please try again." }));
+            alert(`Error: ${errorData.message}`);
+        }
+    } catch (error) {
+        console.error("Error when updating status:", error);
+        alert("An error occurred. Please try again.");
+    }
+}
+
+
+async function editAvailable(id, currentAvailable) {
+    const token = localStorage.getItem("token");
+    const newAvailable = currentAvailable === "true" ? "false" : "true";
+
+    const res = await fetch(`http://localhost:3000/menu/available/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ available: newAvailable })
+    });
+
+    if (res.ok) {
+        loadMenuItems();
+    } else {
+        alert("Failed to update availability.");
+    }
+}
+
+
 async function deleteMenuItem(id) {
     const token = localStorage.getItem("token");
     if (!confirm("Are you sure you want to delete this item?")) return;
@@ -134,5 +200,4 @@ async function deleteMenuItem(id) {
         loadMenuItems();
         showSection('menu');
     }
-
 }

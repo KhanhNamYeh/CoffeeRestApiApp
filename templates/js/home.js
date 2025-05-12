@@ -91,6 +91,15 @@ function updateNavbar() {
                 roleLabel.classList.remove("d-none");
                 roleLabel.textContent = "Admin";
             }
+        } else if (payload.role === "staff") {
+            actionItem.innerHTML = '<i class="bi bi-gear me-2"></i>Setting';
+            actionItem.href = "/manage";
+
+            const roleLabel = document.getElementById("user-role");
+            if (roleLabel) {
+                roleLabel.classList.remove("d-none");
+                roleLabel.textContent = "Staff";
+            }
         } else {
             actionItem.innerHTML = '<i class="bi bi-cart3 me-2"></i>My Cart';
             actionItem.href = "my_order.html";
