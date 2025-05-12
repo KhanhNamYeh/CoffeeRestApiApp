@@ -26,7 +26,7 @@ router.post("/login", async (req, res) => {
 
 /* POST - Signup */
 router.post("/signup", async (req, res) => {
-    const { username, password, role } = req.body;
+    const { username, password, name, email, phone, role } = req.body;
 
     try {
         const [exists] = await pool.query("SELECT * FROM users WHERE username = ?", [username]);
@@ -34,8 +34,8 @@ router.post("/signup", async (req, res) => {
             return res.status(400).json({ message: "User already exists!" });
         }
 
-        await pool.query("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-            [username, password, role || "customer"]);
+        await pool.query("INSERT INTO users (username, password, name, email, phone, role) VALUES (?, ?, ?, ?, ?, ?)",
+            [username, password, name, email, phone, role || "customer"]);
 
         res.status(201).json({ message: "User registered successfully!" });
     } catch (err) {
