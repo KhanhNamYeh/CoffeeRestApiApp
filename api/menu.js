@@ -16,8 +16,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-
-
 /* PUT - Update a menu item (admin only) */
 router.put("/:id", authenticateToken, async (req, res) => {
     if (req.user.role !== "admin") {

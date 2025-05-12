@@ -22,10 +22,10 @@
             </div>
             <nav class="flex-1 space-y-2">
 
-                <a href="/manage/menu" class="sidebar-link active" onclick="showSection('menu')">
+                <a href="/manage/menu" class="sidebar-link" onclick="showSection('menu')">
                     <span class="material-icons">local_cafe</span> Menu
                 </a>
-                <a href="/manage/client" class="sidebar-link">
+                <a href="/manage/client" class="sidebar-link active">
                     <span class="material-icons">group</span> Clients
                 </a>
                 <a href="/manage/order" class="sidebar-link">
@@ -68,11 +68,11 @@
                 </div>
             </div>
 
-            <div id="menu" class="section active">
+            <div id="client" class="section active">
                 <div class="mb-3">
                     <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                         onclick="openAddForm()">
-                        <i class="bi bi-plus-circle me-2"></i> Add New Item
+                        <i class="bi bi-plus-circle me-2"></i> Add New User
                     </button>
                 </div>
                 <div class="overflow-x-auto">
@@ -80,16 +80,16 @@
                         <thead class="bg-gray-200">
                             <tr>
                                 <th class="text-left px-4 py-2">ID</th>
-                                <th class="text-left px-4 py-2">Image</th>
+                                <th class="text-left px-4 py-2">Username</th>
+                                <th class="text-left px-4 py-2">Password</th>
                                 <th class="text-left px-4 py-2">Name</th>
-                                <th class="text-left px-4 py-2">Description</th>
-                                <th class="text-left px-4 py-2">Price</th>
-                                <th class="text-left px-4 py-2">Category</th>
-                                <th class="text-left px-4 py-2">Available</th>
+                                <th class="text-left px-4 py-2">Email</th>
+                                <th class="text-left px-4 py-2">Phone</th>
+                                <th class="text-left px-4 py-2">Role</th>
                                 <th class="text-left px-4 py-2">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="menuTableBody"></tbody>
+                        <tbody id="clientTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -97,45 +97,38 @@
     </div>
 
     <!-- Modal for Add/Edit Item -->
-    <div id="menuModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-50">
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative animate-fade-in">
-            <h2 id="modalTitle" class="text-2xl font-bold mb-4 text-center text-[#3d2700]">Add Menu Item</h2>
-            <form id="menuForm">
+            <h2 id="modalTitle" class="text-2xl font-bold mb-4 text-center text-[#3d2700]">Add User</h2>
+            <form id="userForm">
+                <div class="mb-4">
+                    <label class="block font-semibold text-[#3d2700]">Username</label>
+                    <input id="username" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1" required/>
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold text-[#3d2700]">Password</label>
+                    <input id="password" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1" required/>
+                </div>
                 <div class="mb-4">
                     <label class="block font-semibold text-[#3d2700]">Name</label>
-                    <input id="name" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1"
-                        required />
+                    <input id="name" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-semibold text-[#3d2700]">Description</label>
-                    <textarea id="description" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1"
-                        required></textarea>
+                    <label class="block font-semibold text-[#3d2700]">Email</label>
+                    <input id="email" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1"/>
                 </div>
                 <div class="mb-4">
-                    <label class="block font-semibold text-[#3d2700]">Price ($)</label>
-                    <input id="price" type="number" step="0.01"
-                        class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1" required />
+                    <label class="block font-semibold text-[#3d2700]">Phone</label>
+                    <input id="phone" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1" />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-semibold text-[#3d2700]">Image URL</label>
-                    <input id="image" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1" />
-                </div>
-                <div class="mb-4">
-                    <label class="block font-semibold text-[#3d2700]">Category</label>
-                    <select id="category" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1">
-                        <option value="coffee">Coffee</option>
-                        <option value="tea">Tea</option>
-                        <option value="matcha">Matcha</option>
+                    <label class="block font-semibold text-[#3d2700]">Role</label>
+                    <select id="role" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1">
+                        <option value="admin">Admin</option>
+                        <option value="staff">Staff</option>
+                        <option value="customer">Customer</option>
                     </select>
                 </div>
-                <div class="mb-4">
-                    <label class="block font-semibold text-[#3d2700]">Available</label>
-                    <select id="available" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1">
-                        <option value="1">True</option>
-                        <option value="0">False</option>
-                    </select>
-                </div>
-
                 <div class="flex justify-end gap-2 mt-6">
                     <button type="button" onclick="closeModal()"
                         class="px-4 py-2 bg-gray-300 rounded-xl hover:bg-gray-400">Cancel</button>
@@ -146,7 +139,7 @@
         </div>
     </div>
 
-    <script src="/js/admin.js"></script>
+    <script src="/js/manage_user.js"></script>
 </body>
 
 </html>

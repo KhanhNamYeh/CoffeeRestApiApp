@@ -34,6 +34,10 @@ app.get('/manage/menu', (req, res) => {
     res.sendFile(path.join(__dirname, 'templates', 'manage/manage_menu.html'));
 });
 
+app.get('/manage/client', (req, res) => {
+    res.sendFile(path.join(__dirname, 'templates', 'manage/manage_user.html'));
+});
+
 // Start the server
 
 app.listen(PORT, () => {console.log(`Server running at http://localhost:${PORT}/ Ctrl + click that link`);});
