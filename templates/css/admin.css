@@ -108,3 +108,77 @@
 .toggle-switch.active::after {
   transform: translateX(26px);
 }
+
+.schedule-container {
+  padding: 50px;
+  width: 100%;
+  overflow-x: auto;
+}
+.controls {
+  display: flex;
+  justify-content: flex-end; 
+  gap: 10px;                 
+  padding: 10px;
+}
+.date-display {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.shift-button {
+  padding: 8px 16px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.schedule-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.schedule-container thead th {
+  background-color: #34568B;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+.schedule-container td {
+  border: 1px solid #ddd;
+  padding: 0;
+  height: 100px;
+  vertical-align: top;
+  width: 14.28%; /* 7 days */
+}
+.shift {
+  padding: 10px;
+  margin: 2px;
+  color: white;
+  border-radius: 4px;
+  min-height: 80px;
+}
+.morning {
+  background-color: #f0ad4e; /* Orange */
+}
+.afternoon {
+  background-color: #5bc0de; /* Blue */
+}
+.evening {
+  background-color: #d9534f; /* Red */
+}
+.shift-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shift-details {
+  font-size: 0.9em;
+}
+.no-shift {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding-top: 40px;
+}

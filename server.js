@@ -14,12 +14,14 @@ const menuRoutes = require("./api/menu");
 const userRoutes = require("./api/user");
 const authRoutes = require("./api/auth");
 const orderRoutes = require("./api/order");
+const shiftRoutes = require("./api/shift");
 
 // Use API routes
 app.use("/menu", menuRoutes);
 app.use("/user", userRoutes);
 app.use("/", authRoutes); // This will handle /login, /login-admin, and /signup
 app.use("/orders", orderRoutes);
+app.use("/shift", shiftRoutes);
 
 // Main route
 app.get('/', (req, res) => {
@@ -38,6 +40,9 @@ app.get('/manage/client', (req, res) => {
     res.sendFile(path.join(__dirname, 'templates', 'manage/manage_user.html'));
 });
 
+app.get('/manage/shift', (req, res) => {
+    res.sendFile(path.join(__dirname, 'templates', 'manage/manage_shift.html'));
+});
 // Start the server
 
 app.listen(PORT, () => {console.log(`Server running at http://localhost:${PORT}/ Ctrl + click that link`);});

@@ -34,7 +34,7 @@
                 <a href="/manage/anal" class="sidebar-link">
                     <span class="material-icons">bar_chart</span> Analytics
                 </a>
-                <a href="/manage/shift" class="sidebar-link">
+                <a href="/manage/shift" class="sidebar-link active">
                     <span class="material-icons">schedule</span> Shifts
                 </a>
                 <a href="/manage/booking" class="sidebar-link">
@@ -55,57 +55,53 @@
         </aside>
 
         <main class="main-content p-6">
-            <!-- Default visible section: Guide -->
-            <section id="guide" class="section active">
-                <h2 class="text-2xl font-bold mb-4">🔎 System Usage Guide</h2>
-                <div class="space-y-4 text-sm leading-relaxed">
-                    <div>
-                        <h3 class="font-semibold">☕ Menu</h3>
-                        <ul class="list-disc list-inside">
-                            <li><strong>Admin:</strong> Add / Edit / Delete / Available (Yes/No)</li>
-                            <li><strong>Staff:</strong> Set available items</li>
-                        </ul>
+            <h2>Drop your Excel file here to upload staff schedule:</h2>
+            <form id="uploadForm">
+                <input type="file" id="excelFile" name="file" accept=".xlsx, .xls" required />
+                <button type="submit" style="margin-left:10px;">Upload</button>
+            </form>
+            <br><br>
+            <div id="excelData"></div>
+            <h2>Click here to download the schedule form next week:</h2>
+            <a href="/shift/download" id="downloadLink" style="text-decoration: underline;">Download Schedule</a>
+            <div>
+                <div class="schedule-container">
+                    <div class="controls">
+                        <button id="prevWeek" class="shift-button">« Previous week</button>
+                        <div id="dateRange" class="date-display"></div>
+                        <button id="nextWeek" class="shift-button">Following week »</button>
                     </div>
-                    <div>
-                        <h3 class="font-semibold">👥 Clients</h3>
-                        <ul class="list-disc list-inside">
-                            <li><strong>Admin:</strong> Add / Edit / Delete</li>
-                            <li><strong>Staff:</strong> No access</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold">🧾 Orders</h3>
-                        <ul class="list-disc list-inside">
-                            <li><strong>Admin & Staff:</strong> Add / Edit / Cancel</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold">📊 Analytics</h3>
-                        <ul class="list-disc list-inside">
-                            <li><strong>Admin:</strong> View statistics and reports</li>
-                            <li><strong>Staff:</strong> No access</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold">🕒 Shifts</h3>
-                        <ul class="list-disc list-inside">
-                            <li><strong>Admin:</strong> Manage work schedules</li>
-                            <li><strong>Staff:</strong> No access</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold">📅 Booking</h3>
-                        <ul class="list-disc list-inside">
-                            <li><strong>Admin:</strong> Manage all bookings</li>
-                            <li><strong>Staff:</strong> Accept / Cancel bookings</li>
-                        </ul>
-                    </div>
+                    <table id="scheduleTable">
+                        <thead>
+                            <tr id="weekHeader">
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>
+                                <th>Sunday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="morningShifts">
+                                <!-- Morning shifts will be inserted here -->
+                            </tr>
+                            <tr id="afternoonShifts">
+                                <!-- Afternoon shifts will be inserted here -->
+                            </tr>
+                            <tr id="eveningShifts">
+                                <!-- Evening shifts will be inserted here -->
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </section>
+            </div>
         </main>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="/js/shift.js"></script>
     <script src="/js/admin.js"></script>
-
 </body>
 
 </html>
