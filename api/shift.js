@@ -4,6 +4,7 @@ const ExcelJS = require("exceljs");
 const pool = require("../db"); 
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
+const fs = require('fs');
 
 router.get("/schedule", async (req, res) => {
     try {
@@ -202,7 +203,9 @@ router.post("/upload", upload.single('file'), async (req, res) => {
             }
         }
         await Promise.all(assignPromises);
-
+        fs.unlink(req.file.path, (err) => {
+            if (err) console.error("Error deleting temp file:", err);
+        });
         res.json({ message: "Shifts and assignments updated from Excel file." });
     } catch (err) {
         console.error("Error uploading Excel file:", err);
