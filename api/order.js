@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { authenticateToken } = require("../middleware/auth");
 const pool = require("../db");
+const fs = require("fs");
+const path = require("path");
 
 
 // GET - Get all orders
@@ -148,6 +150,7 @@ router.post("/staff", async (req, res) => {
                 ]
             );
         }
+        Invoice(items, id_order)
         res.status(201).json({ message: "Order created successfully" });
     } catch (err) {
         console.error(err);
@@ -180,6 +183,36 @@ router.put("/:id_order", authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Failed to update order status", error: err.message });
     }
 });
+
+function Invoice(items, id) {
+    // Tạo thư mục nếu chưa có
+    const invoiceDir = path.join(__dirname, "../Invoice");
+    if (!fs.existsSync(invoiceDir)) {
+        fs.mkdirSync(invoiceDir, { recursive: true });
+    }
+
+    // Tính tổng tiền
+    let total = 0;
+    let content = `INVOICE - Order #${id}\n\n`;
+    content += `| ${"Menu Name".padEnd(20)} | ${"Price".padEnd(8)} | ${"Qty".padEnd(3)} | ${"Total".padEnd(8)} | ${"Detail".padEnd(30)} | ${"Note"}\n`;
+    content += "-".repeat(90) + "\n";
+
+    items.forEach(item => {
+        // Nếu item đã có adjusted_price và total_price thì dùng, nếu không thì tự tính
+        const price = Number(item.adjusted_price || item.price || 0);
+        const quantity = Number(item.quantity || 1);
+        const itemTotal = Number(item.total_price || (price * quantity));
+        total += itemTotal;
+        content += `| ${String(item.name_menu || item.name).padEnd(20)} | ${price.toFixed(2).padEnd(8)} | ${String(quantity).padEnd(3)} | ${itemTotal.toFixed(2).padEnd(8)} | ${String(item.detail || "").padEnd(30)} | ${item.note || ""}\n`;
+    });
+
+    content += "-".repeat(90) + "\n";
+    content += `Total: ${total.toFixed(2)} $\n`;
+
+    // Ghi file
+    const filePath = path.join(invoiceDir, `${id}.txt`);
+    fs.writeFileSync(filePath, content, "utf8");
+}
 
 module.exports = router;
 
