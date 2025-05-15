@@ -151,11 +151,14 @@
 
                 // 3. Hiển thị lịch sử
                 container.innerHTML = historyData.map((entry, index) => {
+                    // Tính tổng đơn hàng này
+                    const orderTotal = entry.items.reduce((sum, item) => sum + parseFloat(item.total_price), 0);
+
                     const items = entry.items.map(item => `
                         <tr>
-                            <td>${item.name_menu || item.name}</td>
-                            <td>$${parseFloat(item.price).toFixed(2)}</td>
-                            <td>${item.quantity}</td>
+                            <td class="px-4 py-2 style="width:33%"">${item.name_menu || item.name}</td>
+                            <td class="px-4 py-2 style="width:33%"">$${parseFloat(item.total_price).toFixed(2)}</td>
+                            <td class="px-4 py-2 style="width:33%"">${item.quantity}</td>
                         </tr>
                     `).join("");
 
@@ -169,9 +172,17 @@
                             </div>
                             <table class="table table-sm mt-2">
                                 <thead>
-                                    <tr><th>Name</th><th>Price</th><th>Quantity</th></tr>
+                                    <tr>
+                                    <th class="px-4 py-2" style="width:33%">Name</th">
+                                    <th class="px-4 py-2" style="width:33%">Price</th>
+                                    <th class="px-4 py-2" style="width:33%"">Quantity</th></tr>
                                 </thead>
-                                <tbody>${items}</tbody>
+                                <tbody>
+                                    ${items}
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">Order Total: $${orderTotal.toFixed(2)}</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>`;
                 }).join("");

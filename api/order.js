@@ -20,8 +20,17 @@ router.get("/", async (req, res) => {
                 orders o
             JOIN 
                 users u ON o.id_user = u.id_user
-            GROUP BY 
-                o.id_order, u.name, o.created_order, o.status_order;
+            WHERE
+                o.status_order != 'cancelled'
+            ORDER BY 
+                CASE 
+                    WHEN o.status_order = 'pending' THEN 1
+                    WHEN o.status_order = 'processing' THEN 2
+                    WHEN o.status_order = 'completed' THEN 3
+                    ELSE 4
+                END,
+                o.created_order DESC
+            LIMIT 30;
         `);
         res.json(rows);
     } catch (err) {

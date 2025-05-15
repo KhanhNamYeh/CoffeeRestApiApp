@@ -15,6 +15,7 @@ const userRoutes = require("./api/user");
 const authRoutes = require("./api/auth");
 const orderRoutes = require("./api/order");
 const shiftRoutes = require("./api/shift");
+const revenueRoutes = require("./api/revenue");
 
 // Use API routes
 app.use("/menu", menuRoutes);
@@ -22,6 +23,7 @@ app.use("/user", userRoutes);
 app.use("/", authRoutes); // This will handle /login, /login-admin, and /signup
 app.use("/orders", orderRoutes);
 app.use("/shift", shiftRoutes);
+app.use("/revenue", revenueRoutes);
 
 // Main route
 app.get('/', (req, res) => {
@@ -46,6 +48,10 @@ app.get('/manage/shift', (req, res) => {
 
 app.get('/manage/order', (req, res) => {
     res.sendFile(path.join(__dirname, 'templates', 'manage/manage_order.html'));
+});
+
+app.get('/manage/anal', (req, res) => {
+    res.sendFile(path.join(__dirname, 'templates', 'manage/manage_revenue.html'));
 });
 // Start the server
 
