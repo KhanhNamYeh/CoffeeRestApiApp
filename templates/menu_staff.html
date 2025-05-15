@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>
+        Menu - THE AP HOUSE
+    </title>
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="/css/menu.css" rel="stylesheet" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#382005">
+        <div class="container">
+            <a href="/" class="navbar-brand"
+                style="font-size: 1.8rem; font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">
+                <i class="fa-solid fa-coffee"></i>
+                THE AP HOUSE
+            </a>
+            <form class="d-flex ms-4" role="search"
+                style="background-color: #5a3e2b; border-radius: 25px; padding: 0 10px;">
+                <span class="d-flex align-items-center text-white">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input aria-label="Search" class="form-control border-0 bg-transparent text-white ms-2" id="searchBox"
+                    placeholder="Search menu..." style="box-shadow:none; outline:none;" type="search" />
+            </form>
+            <div class="position-absolute bg-white text-dark rounded shadow mt-2 p-2" id="searchDropdown"
+                style="z-index: 1050; width: 100%; display: none; max-height: 300px; overflow-y: auto;">
+            </div>
+            <button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link nav-item-custom" href="/#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-item-custom" href="menu.html">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-item-custom" href="/#reservation">Reservation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-item-custom" href="/#contact">Contact</a>
+                    </li>
+                    <li class="nav-item" id="login-nav">
+                        <a class="nav-link nav-item-custom" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item ms-4 dropdown d-none" id="account-dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown" href="#"
+                            id="userDropdown" role="button">
+                            <i class="bi bi-person-circle fs-4" style="margin-top: -5px;"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#" id="nav-action-1">...</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="logout()">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <span class="nav-link fw-semibold d-none nav-item-custom" id="user-role">
+                        Admin
+                    </span>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <section class="category-banner" id="coffee" style="background-image: url('img/cf8.png');"></section>
+    <section class="menu-section">
+        <div class="container">
+            <div class="row" id="coffee-list"></div>
+        </div>
+    </section>
+    <section class="category-banner" id="tea" style="background-image: url('img/tea8.png');"></section>
+    <section class="menu-section">
+        <div class="container">
+            <div class="row" id="tea-list"></div>
+        </div>
+    </section>
+    <section class="category-banner" id="matcha" style="background-image: url('img/matcha-banner.png');"></section>
+    <section class="menu-section">
+        <div class="container">
+            <div class="row" id="matcha-list"></div>
+        </div>
+    </section>
+    <a href="order_staff.html" class="btn back-button float-end me-5 text-center"
+        style="background-color: #3d2700; color: white;" id="my-order-button">
+        <i class="bi bi-arrow-right"></i> View Orders
+    </a>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            // Lấy menu từ server
+            const res = await fetch("http://localhost:3000/menu");
+            const menu = await res.json();
+
+            // Phân loại menu
+            const coffeeList = document.getElementById("coffee-list");
+            const teaList = document.getElementById("tea-list");
+            const matchaList = document.getElementById("matcha-list");
+
+            function renderMenu(list, items, prefix) {
+                list.innerHTML = items.map((item, idx) => `
+                    <div class="col-md-2 mb-3 d-flex">
+                        <div class="card flex-fill h-100 d-flex flex-column">
+                            <img src="${item.image}" class="card-img-top" alt="${item.name}" style="object-fit:cover; height:140px;">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <h5 class="card-title text-center">${item.name}</h5>
+                                <p class="card-text text-center">$${parseFloat(item.price).toFixed(2)}</p>
+                                <div class="d-flex align-items-center justify-content-center mt-auto gap-2">
+                                    <button class="btn btn-outline-secondary px-2 py-1" type="button" id="${prefix}-minus-${idx}">-</button>
+                                    <input type="text" class="form-control text-center px-1" id="${prefix}-qty-${idx}" value="0" readonly style="width:40px;">
+                                    <button class="btn btn-outline-secondary px-2 py-1" type="button" id="${prefix}-plus-${idx}">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join("");
+
+                items.forEach((item, idx) => {
+                    let qtyInput = document.getElementById(`${prefix}-qty-${idx}`);
+                    document.getElementById(`${prefix}-plus-${idx}`).onclick = () => {
+                        qtyInput.value = parseInt(qtyInput.value) + 1;
+                    };
+                    document.getElementById(`${prefix}-minus-${idx}`).onclick = () => {
+                        qtyInput.value = Math.max(0, parseInt(qtyInput.value) - 1);
+                    };
+                });
+            }
+
+            renderMenu(
+                coffeeList,
+                menu.filter(item => item.category === "coffee"),
+                "cf"
+            );
+            renderMenu(
+                teaList,
+                menu.filter(item => item.category === "tea"),
+                "tea"
+            );
+            renderMenu(
+                matchaList,
+                menu.filter(item => item.category === "matcha"),
+                "mt"
+            );
+
+            // Khi nhấn "View Orders", lưu các món có quantity > 0 vào localStorage
+            document.getElementById("my-order-button").addEventListener("click", function (e) {
+                let orders = [];
+                [
+                    { list: coffeeList, items: menu.filter(item => item.category === "coffee"), prefix: "cf" },
+                    { list: teaList, items: menu.filter(item => item.category === "tea"), prefix: "tea" },
+                    { list: matchaList, items: menu.filter(item => item.category === "matcha"), prefix: "mt" }
+                ].forEach(group => {
+                    group.items.forEach((item, idx) => {
+                        let qty = parseInt(document.getElementById(`${group.prefix}-qty-${idx}`).value);
+                        if (qty > 0) {
+                            // Thêm qty object, mỗi object quantity = 1
+                            for (let i = 0; i < qty; i++) {
+                                orders.push({
+                                    id: item.id,
+                                    name: item.name,
+                                    price: item.price,
+                                    image: item.image,
+                                    quantity: 1,
+                                    size: "Medium",
+                                    sugar: "No Sugar",
+                                    ice: "No Ice",
+                                    note: ""
+                                });
+                            }
+                        }
+                    });
+                });
+                localStorage.setItem("staff_orders", JSON.stringify(orders));
+                // Chuyển trang (mặc định là thẻ <a> đã chuyển)
+            });
+        });
+    </script>
+</body>
+
+</html>

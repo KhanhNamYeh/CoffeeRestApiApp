@@ -86,6 +86,11 @@ function updateNavbar() {
             actionItem.innerHTML = '<i class="bi bi-gear me-2"></i>Setting';
             actionItem.href = "/manage";
 
+            const navMenu = document.getElementById("nav-menu");
+                if (navMenu) {
+                    navMenu.href = "menu_staff.html";
+            }
+
             const roleLabel = document.getElementById("user-role");
             if (roleLabel) {
                 roleLabel.classList.remove("d-none");
@@ -95,6 +100,11 @@ function updateNavbar() {
             actionItem.innerHTML = '<i class="bi bi-gear me-2"></i>Setting';
             actionItem.href = "/manage";
 
+            const navMenu = document.getElementById("nav-menu");
+                if (navMenu) {
+                    navMenu.href = "menu_staff.html";
+            }
+            
             const roleLabel = document.getElementById("user-role");
             if (roleLabel) {
                 roleLabel.classList.remove("d-none");

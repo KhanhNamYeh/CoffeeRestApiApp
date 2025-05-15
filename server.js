@@ -43,6 +43,10 @@ app.get('/manage/client', (req, res) => {
 app.get('/manage/shift', (req, res) => {
     res.sendFile(path.join(__dirname, 'templates', 'manage/manage_shift.html'));
 });
+
+app.get('/manage/order', (req, res) => {
+    res.sendFile(path.join(__dirname, 'templates', 'manage/manage_order.html'));
+});
 // Start the server
 
 app.listen(PORT, () => {console.log(`Server running at http://localhost:${PORT}/ Ctrl + click that link`);});

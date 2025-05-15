@@ -54,180 +54,180 @@
 
     <script>
         const token = localStorage.getItem("token");
-const payload = token ? JSON.parse(atob(token.split(".")[1])) : null;
-const currentUser = payload?.username;
+        const payload = token ? JSON.parse(atob(token.split(".")[1])) : null;
+        const currentUser = payload?.username;
 
-function removeOrder(index) {
-    let orders = JSON.parse(localStorage.getItem("orders")) || [];
-    orders.splice(index, 1);
-    localStorage.setItem("orders", JSON.stringify(orders));
-    location.reload();
-}
-
-function clearOrders() {
-    localStorage.removeItem("orders");
-    location.reload();
-}
-
-function back() {
-    window.location.href = "menu.html";
-}
-
-
-async function confirmOrder() {
-    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-    console.log(JSON.parse(localStorage.getItem("orders")));
-    if (!Array.isArray(orders) || orders.length === 0) {
-        alert("Your cart is empty!");
-        return;
-    }
-
-    const token = localStorage.getItem("token");
-    const payload = token ? JSON.parse(atob(token.split(".")[1])) : null;
-
-    try {
-        const res = await fetch("http://localhost:3000/orders", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify({
-                items: orders
-            })
-        });
-
-        if (!res.ok) throw new Error("Order failed");
-
-        const data = await res.json();
-        localStorage.removeItem("orders");
-
-        setTimeout(() => {
-            loadOrders();
-            loadHistory(); 
-            new bootstrap.Modal(document.getElementById('confirmModal')).show();
-        }, 50);
-    } catch (err) {
-        alert("Error placing order: " + err.message);
-    }
-}
-
-async function loadHistory() {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    const currentUser = payload?.username;
-
-    const container = document.getElementById("historyContainer");
-    container.innerHTML = `<p class="text-muted text-center">Loading...</p>`;
-
-    try {
-        // 1. Lấy danh sách đơn hàng của user
-        const res = await fetch("http://localhost:3000/orders", {
-            headers: { "Authorization": "Bearer " + token }
-        });
-        if (!res.ok) throw new Error("Failed to fetch orders");
-        const orders = await res.json();
-
-        if (!Array.isArray(orders) || orders.length === 0) {
-            container.innerHTML = `<p class="text-muted text-center">No history found.</p>`;
-            return;
+        function removeOrder(index) {
+            let orders = JSON.parse(localStorage.getItem("orders")) || [];
+            orders.splice(index, 1);
+            localStorage.setItem("orders", JSON.stringify(orders));
+            location.reload();
         }
 
-        // 2. Lấy chi tiết từng đơn hàng
-        const historyData = [];
-        for (const order of orders) {
-            const detailRes = await fetch(`http://localhost:3000/orders/${order.id_order}`, {
-                headers: { "Authorization": "Bearer " + token }
-            });
-            const items = await detailRes.json();
-            historyData.push({
-                date: order.created_order,
-                status: order.status_order, // Thêm dòng này
-                items: items
-            });
+        function clearOrders() {
+            localStorage.removeItem("orders");
+            location.reload();
         }
 
-        // 3. Hiển thị lịch sử
-        container.innerHTML = historyData.map((entry, index) => {
-            const items = entry.items.map(item => `
-                <tr>
-                    <td>${item.name_menu || item.name}</td>
-                    <td>$${parseFloat(item.price).toFixed(2)}</td>
-                    <td>${item.quantity}</td>
-                </tr>
-            `).join("");
-
-            return `
-                <div class="mb-4 border rounded p-3 shadow-sm bg-light">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">
-                            Order #${index + 1} - ${new Date(entry.date).toLocaleString()}
-                        </h6>
-                        <span class="badge bg-info text-dark ms-2">${entry.status}</span>
-                    </div>
-                    <table class="table table-sm mt-2">
-                        <thead>
-                            <tr><th>Name</th><th>Price</th><th>Quantity</th></tr>
-                        </thead>
-                        <tbody>${items}</tbody>
-                    </table>
-                </div>`;
-        }).join("");
-    } catch (err) {
-        container.innerHTML = `<p class="text-danger text-center">Failed to load order history.</p>`;
-    }
-}
+        function back() {
+            window.location.href = "menu.html";
+        }
 
 
-function goHome() {
-    window.location.href = "home.html";
-}
-function loadOrders() {
+        async function confirmOrder() {
+            const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+            console.log(JSON.parse(localStorage.getItem("orders")));
+            if (!Array.isArray(orders) || orders.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
 
-    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-    const orderList = document.getElementById("order-list");
-    const totalPriceElement = document.getElementById("total-price");
-    let totalPrice = 0;
-    orderList.innerHTML = "";
+            const token = localStorage.getItem("token");
+            const payload = token ? JSON.parse(atob(token.split(".")[1])) : null;
 
-    fetch("http://localhost:3000/menu")
-        .then((res) => res.json())
-        .then((menuItems) => {
-            orders.forEach((order, index) => {
-                const product = menuItems.find((item) => item.id == order.id);
-                if (product) {
-                    const itemTotal = product.price * order.quantity;
-                    totalPrice += itemTotal;
+            try {
+                const res = await fetch("http://localhost:3000/orders/customer", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        items: orders
+                    })
+                });
 
-                    const orderItem = document.createElement("div");
-                    orderItem.classList.add("order-item");
-                    orderItem.innerHTML = `
-                <div style="display: flex; align-items: center;">
-                    <img src="${product.image}" alt="${product.name}">
-                    <div>
-                        <h5 class="font-weight-bold">${product.name} (x${order.quantity})</h5>
-                        <p>Price: $${parseFloat(product.price).toFixed(2)}</p>
-                        <p>Total: $${itemTotal.toFixed(2)}</p>
-                        <p>Size: ${order.size}, Sugar: ${order.sugar}, Ice: ${order.ice}</p>
-                        <p>NOTE: ${order.note}</p>
-                    </div>
-                </div>
-                <button class="btn btn-warning" onclick="removeOrder(${index})">Delete</button>
-            `;
-                    orderList.appendChild(orderItem);
+                if (!res.ok) throw new Error("Order failed");
+
+                const data = await res.json();
+                localStorage.removeItem("orders");
+
+                setTimeout(() => {
+                    loadOrders();
+                    loadHistory(); 
+                    new bootstrap.Modal(document.getElementById('confirmModal')).show();
+                }, 50);
+            } catch (err) {
+                alert("Error placing order: " + err.message);
+            }
+        }
+
+        async function loadHistory() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const currentUser = payload?.username;
+
+            const container = document.getElementById("historyContainer");
+            container.innerHTML = `<p class="text-muted text-center">Loading...</p>`;
+
+            try {
+                // 1. Lấy danh sách đơn hàng của user
+                const res = await fetch("http://localhost:3000/orders", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                if (!res.ok) throw new Error("Failed to fetch orders");
+                const orders = await res.json();
+
+                if (!Array.isArray(orders) || orders.length === 0) {
+                    container.innerHTML = `<p class="text-muted text-center">No history found.</p>`;
+                    return;
                 }
-            });
 
-            totalPriceElement.textContent = totalPrice.toFixed(2);
-        });
-}
+                // 2. Lấy chi tiết từng đơn hàng
+                const historyData = [];
+                for (const order of orders) {
+                    const detailRes = await fetch(`http://localhost:3000/orders/${order.id_order}`, {
+                        headers: { "Authorization": "Bearer " + token }
+                    });
+                    const items = await detailRes.json();
+                    historyData.push({
+                        date: order.created_order,
+                        status: order.status_order, // Thêm dòng này
+                        items: items
+                    });
+                }
 
-window.onload = function () {
-    loadOrders();
-    loadHistory();
-};
+                // 3. Hiển thị lịch sử
+                container.innerHTML = historyData.map((entry, index) => {
+                    const items = entry.items.map(item => `
+                        <tr>
+                            <td>${item.name_menu || item.name}</td>
+                            <td>$${parseFloat(item.price).toFixed(2)}</td>
+                            <td>${item.quantity}</td>
+                        </tr>
+                    `).join("");
+
+                    return `
+                        <div class="mb-4 border rounded p-3 shadow-sm bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    Order #${index + 1} - ${new Date(entry.date).toLocaleString()}
+                                </h6>
+                                <span class="badge bg-info text-dark ms-2">${entry.status}</span>
+                            </div>
+                            <table class="table table-sm mt-2">
+                                <thead>
+                                    <tr><th>Name</th><th>Price</th><th>Quantity</th></tr>
+                                </thead>
+                                <tbody>${items}</tbody>
+                            </table>
+                        </div>`;
+                }).join("");
+            } catch (err) {
+                container.innerHTML = `<p class="text-danger text-center">Failed to load order history.</p>`;
+            }
+        }
+
+
+        function goHome() {
+            window.location.href = "home.html";
+        }
+        function loadOrders() {
+
+            const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+            const orderList = document.getElementById("order-list");
+            const totalPriceElement = document.getElementById("total-price");
+            let totalPrice = 0;
+            orderList.innerHTML = "";
+
+            fetch("http://localhost:3000/menu")
+                .then((res) => res.json())
+                .then((menuItems) => {
+                    orders.forEach((order, index) => {
+                        const product = menuItems.find((item) => item.id == order.id);
+                        if (product) {
+                            const itemTotal = order.price * order.quantity;
+                            totalPrice += itemTotal;
+
+                            const orderItem = document.createElement("div");
+                            orderItem.classList.add("order-item");
+                            orderItem.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            <img src="${product.image}" alt="${product.name}">
+                            <div>
+                                <h5 class="font-weight-bold">${product.name} (x${order.quantity})</h5>
+                                <p>Price: $${parseFloat(order.price).toFixed(2)}</p>
+                                <p>Total: $${itemTotal.toFixed(2)}</p>
+                                <p>Size: ${order.size}, Sugar: ${order.sugar}, Ice: ${order.ice}</p>
+                                <p>NOTE: ${order.note}</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-warning" onclick="removeOrder(${index})">Delete</button>
+                    `;
+                            orderList.appendChild(orderItem);
+                        }
+                    });
+
+                    totalPriceElement.textContent = totalPrice.toFixed(2);
+                });
+        }
+
+        window.onload = function () {
+            loadOrders();
+            loadHistory();
+        };
 </script>
 </body>
 
